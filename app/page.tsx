@@ -1,18 +1,65 @@
+"use client";
+import { useEffect, useState } from "react";
+import EnterTeam from "./components/EnterTeam";
+import Lobby from "./components/Lobby";
+import Question from "./components/Question";
+import Results from "./components/Results";
+import TeamDetails from "./components/TeamDetails";
+import { useQuestion } from "./context/QuestionContextProvider";
+import { PhaseType } from "./lib/types";
+
 export default function Home() {
-   return (
-      <main>
-         <div className="flex flex-col gap-8 justify-center items-center h-screen">
-            <h2 className="text-2xl font-bold text-[#2c2c2c]">
-               Enter you team name
-            </h2>
-            <input
-               type="text"
-               className="border-1 text-[#2c2c2c] border-black/30 outline-none rounded-md px-[2vw] py-[2vw] w-[85vw] text-center"
-            />
-            <button className="cursor-pointer  bg-gradient-to-r text-[#f5f5f5] font-bold px-[12vw] rounded-lg text-[4.5vw] py-[2vw] from-[#1FBE5A] to-[#14A84D]">
-               Join
-            </button>
-         </div>
-      </main>
-   );
+   const [phase, setPhase] = useState<PhaseType>("TeamName");
+   const { questionState } = useQuestion();
+
+   useEffect(() => {
+      if (!localStorage.getItem("token")) return;
+      if (!questionState) return;
+      switch (questionState.questionState) {
+         case "Question":
+            localStorage.setItem("phase", "Question");
+            setPhase("Question");
+            break;
+         case "Result":
+            localStorage.setItem("phase", "Result");
+            setPhase("Result");
+            break;
+         case "Final":
+            localStorage.setItem("phase", "Final");
+            setPhase("Final");
+            break;
+         case null:
+            localStorage.setItem("phase", "Lobby");
+            setPhase("Lobby");
+            break;
+      }
+   }, [questionState]);
+
+   const switchPhase = (switchTo: PhaseType) => {
+      localStorage.setItem("phase", switchTo);
+      setPhase(switchTo);
+   };
+
+   useEffect(() => {
+      const lastState = localStorage.getItem("phase") as PhaseType;
+      if (lastState) setPhase(lastState);
+   }, []);
+
+   const currentPhase = () => {
+      switch (phase) {
+         case "TeamName":
+            return <EnterTeam switchPhase={switchPhase} />;
+
+         case "TeamDetails":
+            return <TeamDetails switchPhase={switchPhase} />;
+         case "Lobby":
+            return <Lobby />;
+         case "Question":
+            return <Question />;
+         case "Result":
+            return <Results />;
+      }
+   };
+
+   return <main>{currentPhase()}</main>;
 }

@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
-body {
-   background-color: #ececec;
+@plugin "daisyui" {
+   themes:
+      light --default,
+      dark --prefersdark,
+      cupcake;
+}
+
+.timer {
+   animation: timer 12s linear forwards;
+}
+
+@keyframes timer {
+   from {
+      width: 100%;
+   }
+   to {
+      width: 0%;
+   }
 }
