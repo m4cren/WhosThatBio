@@ -1,4 +1,4 @@
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuestion } from "../context/QuestionContextProvider";
@@ -10,20 +10,16 @@ const Results = () => {
    const {
       previousAns: { img, label },
    } = useQuestion();
-
+   const teamRef = doc(db, "teams", localStorage.getItem("token")!);
    useEffect(() => {
-      const teamRef = doc(db, "teams", localStorage.getItem("token")!);
+      const unsub = onSnapshot(teamRef, (snapshot) => {
+         const docData = snapshot.data();
 
-      const getResult = async () => {
-         const teamSnap = await getDoc(teamRef);
+         if (!docData) return;
+         setResult(docData.correct);
+      });
 
-         if (!teamSnap.exists()) return;
-
-         const teamData = teamSnap.data();
-
-         setResult(teamData.correct);
-      };
-      getResult();
+      return () => unsub();
    }, []);
 
    return (

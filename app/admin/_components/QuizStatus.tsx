@@ -10,7 +10,8 @@ const QuizStatus = ({
    team_count: number;
    team_ready: number;
 }) => {
-   const { handleQuestionState, questionState, onLobby } = useQuestion();
+   const { handleQuestionState, questionState, onLobby, currentQuestion } =
+      useQuestion();
    return (
       <div className="flex items-center justify-between ">
          <div className="flex items-center gap-8">
@@ -31,7 +32,12 @@ const QuizStatus = ({
             </div>
          </div>
          <div>
-            {questionState?.questionState === null ? (
+            {currentQuestion !== "q12" ? (
+               <ActionBtn
+                  action={() => handleQuestionState("Final")}
+                  children="End Quiz"
+               />
+            ) : questionState?.questionState === null ? (
                <ActionBtn
                   action={() => handleQuestionState("Question")}
                   children={

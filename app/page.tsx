@@ -7,6 +7,7 @@ import Results from "./components/Results";
 import TeamDetails from "./components/TeamDetails";
 import { useQuestion } from "./context/QuestionContextProvider";
 import { PhaseType } from "./lib/types";
+import Final from "./components/Final";
 
 export default function Home() {
    const [phase, setPhase] = useState<PhaseType>("TeamName");
@@ -58,6 +59,8 @@ export default function Home() {
             return <Question />;
          case "Result":
             return <Results />;
+         case "Final":
+            return <Final />;
       }
    };
 

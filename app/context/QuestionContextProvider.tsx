@@ -18,6 +18,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../lib/firebase/client";
 import { sampleQuestion } from "../lib/questions";
+import { error } from "console";
 
 interface Props {
    previousAns: {
@@ -42,7 +43,7 @@ const QuestionContextProvider = ({ children }: PropsWithChildren) => {
    const questionRef = doc(db, "questions", room_id);
    const teamRef = collection(db, "teams");
 
-   const [currentQuestion, setCurrentQuestion] = useState<string>("q1");
+   const [currentQuestion, setCurrentQuestion] = useState<string>("");
 
    const [previousAns, setPreviousAns] = useState<{
       label: string | undefined;
@@ -53,11 +54,31 @@ const QuestionContextProvider = ({ children }: PropsWithChildren) => {
    });
 
    useEffect(() => {
-      const correctChoice = sampleQuestion[currentQuestion].choice.find(
-         ({ key }) => key === sampleQuestion[currentQuestion].correctAns,
-      );
-      const correctImg = sampleQuestion[currentQuestion].correct_img;
-      setPreviousAns({ label: correctChoice?.label, img: correctImg });
+      const unsub = onSnapshot(questionRef, (snapshot) => {
+         const docData = snapshot.data();
+
+         if (!docData) return;
+
+         const ques_num = docData.number;
+
+         setCurrentQuestion(`q${ques_num}`);
+      });
+
+      return () => unsub();
+   }, []);
+
+   useEffect(() => {
+      if (!currentQuestion || questionState?.questionState === "Final") return;
+
+      try {
+         const correctChoice = sampleQuestion[currentQuestion].choice.find(
+            ({ key }) => key === sampleQuestion[currentQuestion].correctAns,
+         );
+         const correctImg = sampleQuestion[currentQuestion].correct_img;
+         setPreviousAns({ label: correctChoice?.label, img: correctImg });
+      } catch {
+         console.log("finish");
+      }
    }, [currentQuestion]);
 
    const onReady = async (token: string) => {
@@ -86,7 +107,6 @@ const QuestionContextProvider = ({ children }: PropsWithChildren) => {
       if (!questionSnap.exists()) return;
       const questionData = questionSnap.data();
       const question_num = questionData.number;
-
       await updateDoc(questionRef, {
          questionState: null,
          number: question_num + 1,
@@ -102,9 +122,9 @@ const QuestionContextProvider = ({ children }: PropsWithChildren) => {
       });
       await Promise.all(updates);
    };
+   const questionRefs = collection(db, "questions");
    useEffect(() => {
-      const questionRef = collection(db, "questions");
-      const unsub = onSnapshot(questionRef, (snapshop) => {
+      const unsub = onSnapshot(questionRefs, (snapshop) => {
          const result: QuestionStateType[] = snapshop.docs.map((doc) => ({
             id: doc.id,
             ...(doc.data() as QuestionStateType),
