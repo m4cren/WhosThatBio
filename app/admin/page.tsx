@@ -5,6 +5,7 @@ import QuizStatus from "./_components/QuizStatus";
 import TeamLists from "../components/TeamLists";
 import QuestionSummary from "../components/QuestionSummary";
 import { useQuestion } from "../context/QuestionContextProvider";
+import Ranking from "../components/Ranking";
 
 const page = () => {
    const { team_count, team_ready, teams } = useTeamList();
@@ -16,6 +17,8 @@ const page = () => {
          <QuizStatus team_count={team_count} team_ready={team_ready} />
          {questionState?.questionState === "Result" ? (
             <QuestionSummary teams={teams} />
+         ) : questionState?.questionState === "Final" ? (
+            <Ranking teams={teams} />
          ) : (
             <TeamLists teams={teams} />
          )}

@@ -8,13 +8,31 @@ import TeamDetails from "./components/TeamDetails";
 import { useQuestion } from "./context/QuestionContextProvider";
 import { PhaseType } from "./lib/types";
 import Final from "./components/Final";
+import { collection, doc, getDoc } from "firebase/firestore";
+import { db } from "./lib/firebase/client";
 
 export default function Home() {
    const [phase, setPhase] = useState<PhaseType>("TeamName");
    const { questionState } = useQuestion();
 
+   const checkTeam = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const teamRef = doc(db, "teams", token!);
+      const snapTeam = await getDoc(teamRef);
+
+      if (!snapTeam.exists()) {
+         setPhase("TeamName");
+      }
+   };
+
    useEffect(() => {
-      if (!localStorage.getItem("token")) return;
+      checkTeam();
+      if (!localStorage.getItem("token")) {
+         setPhase("TeamName");
+         return;
+      }
+
       if (!questionState) return;
       switch (questionState.questionState) {
          case "Question":
@@ -43,7 +61,11 @@ export default function Home() {
 
    useEffect(() => {
       const lastState = localStorage.getItem("phase") as PhaseType;
-      if (lastState) setPhase(lastState);
+      if (lastState) {
+         setPhase(lastState);
+      } else {
+         setPhase("TeamName");
+      }
    }, []);
 
    const currentPhase = () => {
@@ -60,7 +82,7 @@ export default function Home() {
          case "Result":
             return <Results />;
          case "Final":
-            return <Final />;
+            return <Final switchPhase={switchPhase} />;
       }
    };
 

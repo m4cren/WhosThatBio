@@ -2,6 +2,8 @@
 import { useQuestion } from "@/app/context/QuestionContextProvider";
 import { CheckCheck } from "lucide-react";
 import ActionBtn from "./ActionBtn";
+import { collection, doc, updateDoc } from "firebase/firestore";
+import { db } from "@/app/lib/firebase/client";
 
 const QuizStatus = ({
    team_count,
@@ -10,8 +12,35 @@ const QuizStatus = ({
    team_count: number;
    team_ready: number;
 }) => {
-   const { handleQuestionState, questionState, onLobby, currentQuestion } =
-      useQuestion();
+   const {
+      handleQuestionState,
+      questionState,
+      onLobby,
+      currentQuestion,
+      room_id,
+   } = useQuestion();
+
+   if (questionState?.questionState === "Final") {
+      return (
+         <div className="flex items-center gap-8 justify-center">
+            <h1 className="text-2xl font-bold text-center">Quiz Finished</h1>
+            <button
+               onClick={async () => {
+                  const questionRef = doc(db, "questions", room_id);
+
+                  await updateDoc(questionRef, {
+                     number: 1,
+                     questionState: null,
+                  });
+               }}
+               className="cursor-pointer bg-gradient-to-r from-[#1FBE5A] to-[#14A84D] text-[#f5f5f5] font-bold px-[2vw] rounded-lg text-[1vw] py-[1vw] disabled:cursor-not-allowed disabled:bg-gray-400 disabled:text-gray-200 disabled:opacity-70"
+            >
+               Reset
+            </button>
+         </div>
+      );
+   }
+
    return (
       <div className="flex items-center justify-between ">
          <div className="flex items-center gap-8">
@@ -25,17 +54,24 @@ const QuizStatus = ({
                   Quiz Status
                </h4>
                <p className="opacity-60 text-[#2c2c2c]">
-                  {questionState?.questionState === "Result"
-                     ? "Ready to proceed to next question"
-                     : `Team ready ${team_ready}/${team_count}`}
+                  {team_count <= 0
+                     ? "There are no teams registered"
+                     : questionState?.questionState === null
+                       ? `Team ready ${team_ready}/${team_count}`
+                       : questionState?.questionState === "Result" &&
+                         "Ready to proceed to next question"}
                </p>
             </div>
          </div>
          <div>
-            {currentQuestion !== "q12" ? (
+            {currentQuestion === "q13" &&
+            questionState?.questionState === null ? (
                <ActionBtn
                   action={() => handleQuestionState("Final")}
                   children="End Quiz"
+                  team_count={team_count}
+                  team_ready={team_ready}
+                  current_question={currentQuestion}
                />
             ) : questionState?.questionState === null ? (
                <ActionBtn
@@ -47,8 +83,9 @@ const QuizStatus = ({
                   }
                   team_count={team_count}
                   team_ready={team_ready}
+                  current_question={currentQuestion}
                />
-            ) : team_count !== 0 ? (
+            ) : (
                <ActionBtn
                   action={() => onLobby()}
                   children={
@@ -57,12 +94,9 @@ const QuizStatus = ({
                         : "Go To Lobby"
                   }
                   questionState={questionState}
-               />
-            ) : (
-               <ActionBtn
-                  action={() => onLobby()}
-                  children="Waiting for others"
-                  questionState={questionState}
+                  team_count={team_count}
+                  team_ready={team_ready}
+                  current_question={currentQuestion}
                />
             )}
          </div>

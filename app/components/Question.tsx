@@ -10,6 +10,7 @@ const Question = () => {
    const { currentQuestion } = useQuestion();
    const [isChecking, setIsChecking] = useState<boolean>(false);
    const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+   const [isImgLoading, setIsImgLoading] = useState<boolean>(true);
    useEffect(() => {
       setSelectedAnswer(null);
       const timer = setTimeout(() => {
@@ -54,11 +55,15 @@ const Question = () => {
             <h2 className="font-bold text-2xl text-center">
                Waht da f*k is dat?
             </h2>
+            {isImgLoading && (
+               <span className="loading loading-infinity loading-[12rem]" />
+            )}
             <Image
                src={`/Questions/${sampleQuestion[currentQuestion].img}.png`}
                alt="question"
                width={300}
                height={300}
+               onLoad={() => setIsImgLoading(false)}
             />
 
             <ul className="grid grid-cols-2 w-[95vw] gap-[2vw]">

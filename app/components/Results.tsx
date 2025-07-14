@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuestion } from "../context/QuestionContextProvider";
 import { db } from "../lib/firebase/client";
 import Image from "next/image";
+import ReactConfetti from "react-confetti";
 
 const Results = () => {
    const [result, setResult] = useState<boolean | null>(null);
@@ -24,6 +25,7 @@ const Results = () => {
 
    return (
       <div className="h-screen flex flex-col gap-[8vw] items-center justify-center">
+         <ReactConfetti className="w-full h-screen" run={result ?? false} />
          <Image
             width={200}
             height={200}

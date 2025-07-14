@@ -1,14 +1,6 @@
 "use client";
 
 import {
-   createContext,
-   PropsWithChildren,
-   useContext,
-   useEffect,
-   useState,
-} from "react";
-import { QuestionStateType } from "../lib/types";
-import {
    collection,
    doc,
    getDoc,
@@ -16,9 +8,16 @@ import {
    onSnapshot,
    updateDoc,
 } from "firebase/firestore";
+import {
+   createContext,
+   PropsWithChildren,
+   useContext,
+   useEffect,
+   useState,
+} from "react";
 import { db } from "../lib/firebase/client";
 import { sampleQuestion } from "../lib/questions";
-import { error } from "console";
+import { QuestionStateType } from "../lib/types";
 
 interface Props {
    previousAns: {
@@ -29,7 +28,7 @@ interface Props {
    handleQuestionState: (state: "Question" | "Result" | "Final" | null) => void;
    onReady: (token: string) => void;
    onLobby: () => void;
-
+   room_id: string;
    currentQuestion: string;
 }
 
@@ -95,11 +94,13 @@ const QuestionContextProvider = ({ children }: PropsWithChildren) => {
          questionState: state,
       });
 
-      setTimeout(async () => {
-         await updateDoc(questionRef, {
-            questionState: "Result",
-         });
-      }, 12000);
+      if (state !== "Final") {
+         setTimeout(async () => {
+            await updateDoc(questionRef, {
+               questionState: "Result",
+            });
+         }, 12000);
+      }
    };
    const onLobby = async () => {
       const questionSnap = await getDoc(questionRef);
@@ -145,7 +146,7 @@ const QuestionContextProvider = ({ children }: PropsWithChildren) => {
             onLobby,
             onReady,
             currentQuestion,
-
+            room_id,
             questionState,
          }}
       >
