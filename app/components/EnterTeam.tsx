@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { PhaseType } from "../lib/types";
+import { motion } from "framer-motion";
 
 interface Props {
    switchPhase: (switchTo: PhaseType) => void;
@@ -10,7 +11,12 @@ const EnterTeam = ({ switchPhase }: Props) => {
    const inputRef = useRef<HTMLInputElement | null>(null);
    const [errMsg, setErrMsg] = useState<string>("");
    return (
-      <div className="flex flex-col gap-8 justify-center items-center h-screen">
+      <motion.div
+         initial={{ x: -100, opacity: 0 }}
+         animate={{ x: 0, opacity: 1 }}
+         transition={{ duration: 0.4, ease: "easeOut" }}
+         className="flex flex-col gap-8 justify-center items-center h-screen"
+      >
          <h2 className="text-2xl font-bold text-[#2c2c2c]">
             {errMsg ? errMsg : "Enter you team name"}
          </h2>
@@ -34,7 +40,7 @@ const EnterTeam = ({ switchPhase }: Props) => {
          >
             Next
          </button>
-      </div>
+      </motion.div>
    );
 };
 

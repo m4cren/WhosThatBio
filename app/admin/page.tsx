@@ -19,6 +19,10 @@ const page = () => {
             <QuestionSummary teams={teams} />
          ) : questionState?.questionState === "Final" ? (
             <Ranking teams={teams} />
+         ) : questionState?.questionState === "Question" ? (
+            <div className="flex w-full items-center justify-center h-[20vw]">
+               <span className="loading loading-dots scale-300 text-[#14A84D]" />
+            </div>
          ) : (
             <TeamLists teams={teams} />
          )}

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { PhaseType } from "../lib/types";
-
+import { motion } from "framer-motion";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../lib/firebase/client";
 import { useRouter } from "next/navigation";
@@ -56,7 +56,10 @@ const TeamDetails = ({ switchPhase }: Props) => {
       );
    }
    return (
-      <form
+      <motion.form
+         initial={{ x: -100, opacity: 0 }}
+         animate={{ x: 0, opacity: 1 }}
+         transition={{ duration: 0.4, ease: "easeOut" }}
          onSubmit={handleSubmit(onSubmit)}
          className="flex flex-col gap-8 justify-center items-center h-screen"
       >
@@ -88,7 +91,7 @@ const TeamDetails = ({ switchPhase }: Props) => {
          >
             Join
          </button>
-      </form>
+      </motion.form>
    );
 };
 

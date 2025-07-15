@@ -5,7 +5,7 @@ import { sampleQuestion } from "../lib/questions";
 import { useEffect, useState } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase/client";
-
+import { motion } from "framer-motion";
 const Question = () => {
    const { currentQuestion } = useQuestion();
    const [isChecking, setIsChecking] = useState<boolean>(false);
@@ -49,7 +49,11 @@ const Question = () => {
       checkAns();
    }, [selectedAnswer, isChecking]);
    return (
-      <div>
+      <motion.div
+         initial={{ x: -100, opacity: 0 }}
+         animate={{ x: 0, opacity: 1 }}
+         transition={{ duration: 0.4, ease: "easeOut" }}
+      >
          <div className="timer  bg-gradient-to-r from-[#1FBE5A] to-[#14A84D] h-[6vw] "></div>
          <div className="flex w-full flex-col items-center gap-[5vw] mt-[35vw]">
             <h2 className="font-bold text-2xl text-center">
@@ -78,7 +82,7 @@ const Question = () => {
                ))}
             </ul>
          </div>
-      </div>
+      </motion.div>
    );
 };
 

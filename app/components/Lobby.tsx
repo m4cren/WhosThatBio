@@ -7,7 +7,7 @@ import TeamLists from "./TeamLists";
 import Heading from "./Heading";
 import { useEffect, useState } from "react";
 import { useQuestion } from "../context/QuestionContextProvider";
-
+import { motion } from "framer-motion";
 const Lobby = () => {
    const token = localStorage.getItem("token")!;
 
@@ -30,7 +30,12 @@ const Lobby = () => {
    }, []);
 
    return (
-      <div className="flex flex-col items-center gap-[8vw] py-[8vw]">
+      <motion.div
+         initial={{ x: -100, opacity: 0 }}
+         animate={{ x: 0, opacity: 1 }}
+         transition={{ duration: 0.4, ease: "easeOut" }}
+         className="flex flex-col items-center gap-[8vw] py-[8vw]"
+      >
          <Heading />
 
          <div>
@@ -59,7 +64,7 @@ disabled:cursor-not-allowed disabled:bg-gray-400 disabled:text-gray-200 disabled
             </p>
          </div>
          <TeamLists teams={teams} />
-      </div>
+      </motion.div>
    );
 };
 

@@ -5,7 +5,7 @@ import { deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import Ranking from "./Ranking";
 import { useTeamList } from "../context/TeamListContextProvider";
 import { useRouter } from "next/navigation";
-
+import { motion } from "framer-motion";
 const Final = ({
    switchPhase,
 }: {
@@ -33,7 +33,12 @@ const Final = ({
    }, []);
 
    return (
-      <div className="flex flex-col gap-8 items-center py-[8vw] px-[5vw]">
+      <motion.div
+         initial={{ x: -100, opacity: 0 }}
+         animate={{ x: 0, opacity: 1 }}
+         transition={{ duration: 0.4, ease: "easeOut" }}
+         className="flex flex-col gap-8 items-center py-[8vw] px-[5vw]"
+      >
          <div className="border-1 border-black/30 rounded-md p-8 w-[80vw] flex flex-col items-center gap-6">
             <h1>
                Team Name:{" "}
@@ -63,7 +68,7 @@ const Final = ({
             </button>
          </div>
          <Ranking teams={teams} />
-      </div>
+      </motion.div>
    );
 };
 
